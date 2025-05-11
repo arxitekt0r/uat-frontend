@@ -46,21 +46,16 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const login = async () => {
-  error.value = ''
   try {
-    const payload = new URLSearchParams()
-    payload.append('username', username.value)
-    payload.append('password', password.value)
+    const formData = new URLSearchParams()
+    formData.append('username', username.value)
+    formData.append('password', password.value)
 
-    const res = await axios.post('https://api.uatsystems.dev/users/login', payload, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-
-    userStore.setToken(res.data.access_token)
-    await userStore.fetchUser()
-    router.push('/dashboard')
+    const response = await axios.post('/users/login', formData)
+    const token = response.data.access_token
+    localStorage.setItem('token', token)
+    error.value = ''
+    alert('Login successful!')
   } catch (err) {
     error.value = err.response?.data?.detail || 'Login failed'
   }
